@@ -1,6 +1,5 @@
 # coding=utf-8
 '''
-
 What is the engine?
 What is the declarative base?
 
