@@ -12,10 +12,14 @@ Consider mapping the flow of data spec through the db and api.
 Use camelCase over snake_case for graphene schema objects...
 
 We'll need to learn to control/understand the SQLAchemy Engine.
+
+
+You need your resolvers to raise errors.
 """
 
 import graphene
-from tut_sqla import engine, BookModel, Base
+from database import Base, engine
+from database.book_model import BookModel
 from sqlalchemy.orm import sessionmaker
 from graphene_sqlalchemy import SQLAlchemyObjectType, SQLAlchemyConnectionField
 
@@ -29,8 +33,10 @@ class Query(graphene.ObjectType):
     def resolve_books(self, info):
         print("\n\n`resolve_books` running\n")
         session = info.context.get('db_connect')
-        session_data = session.query(BookModel).all()
+        session_data = session.query(BookModel).all() # NOTE: When SQLAchemcy doesn't know where your db is queries raise errors
         print("\n`resolve_books` finished\n\n")
+        # TODO the connection between the format of the data and bookschema type to
+        # ... likily to loose to depend on
         return session_data
 
 class BookInput(graphene.InputObjectType):
@@ -60,22 +66,3 @@ class Mutation(graphene.ObjectType):
 
 
 schema = graphene.Schema(query=Query, mutation=Mutation)
-
-Session = sessionmaker(bind=engine)
-session = Session()
-
-Base.metadata.create_all(engine)
-
-harry_potter = BookModel(title="Harry Potter")
-spks_ap = BookModel(title="The Spook's Apprentice", completed=True)
-grey = BookModel(title="Fifty Shades of Grey")
-
-session.add(harry_potter)
-session.add(spks_ap)
-session.add(grey)
-
-session.commit()
-
-
-print(schema.execute('{ books { title, bookId }}', context={'db_connect': session}).data['books'])
-print(schema.execute('mutation { createBook (bookData: {title:"Fifty Shades Darker",completed:true}) { book { title, completed, creationDatetime, bookId } } }', context={'db_connect': session}).data)
