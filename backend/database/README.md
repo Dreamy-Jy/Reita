@@ -8,7 +8,7 @@ All our database functionality is built on [SQLAchemy](https://www.sqlalchemy.or
 
 `./data/` - a folder containing all persisting data
 
-`./book_model.py` - contains the model representing the books table.
+`./models/` - contains all database models.
 
 `./constants.py` - contains all constant value related to the operation of the database.
 

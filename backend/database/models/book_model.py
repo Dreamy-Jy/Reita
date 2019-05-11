@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, Boolean, DateTime
 from datetime import datetime
-from . import Base
+from .. import Base
 
 class BookModel(Base):
     __tablename__ = 'books'
